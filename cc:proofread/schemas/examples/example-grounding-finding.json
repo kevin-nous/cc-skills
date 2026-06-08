@@ -1,0 +1,22 @@
+{
+  "record_type": "finding",
+  "id": "8a3e9c1d-4b1f-4d2a-9b7c-2f1a5b9e1c01",
+  "lens": "grounding",
+  "check_id": "contradicting-data-not-addressed",
+  "severity": "blocking",
+  "claim": "V2 won decisively on signup_completed; the read is clean.",
+  "location": {
+    "file": "experiments/checkout-redesign-v2.md",
+    "line_range_start": 42,
+    "line_range_end": 57,
+    "section": "Latest read"
+  },
+  "finding": "The May 12 strict-mature cohort parity stored in state.yaml directly contradicts this conclusion: on the conditional purchase_success rate, V5 outperformed V2 — the kill scenario the pause-to-mature posture was designed to detect. The draft does not surface, acknowledge, or address this datapoint.",
+  "remediation": "Either (a) lead with the May 12 parity in a 'contradicting data' section before the headline, or (b) demonstrate why signup_completed is the decision metric in spite of purchase_success parity. Do not publish with the parity unaddressed.",
+  "evidence": {
+    "substrate_field": "state.yaml :: experiments.checkout_redesign_v2.latest_read.purchase_success_early_read.note",
+    "substrate_value": "May 12 strict-mature cohort: V5 conditional purchase_success > V2 (kill-scenario signature; verdict: directional negative, inconclusive after SRM correction).",
+    "draft_claim": "V2 won decisively on signup_completed; the read is clean."
+  },
+  "confidence": 0.95
+}

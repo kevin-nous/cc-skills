@@ -1,0 +1,12 @@
+{
+  "record_type": "coverage",
+  "lens": "grounding",
+  "checks_attempted": 4,
+  "checks_completed": 4,
+  "claims_examined": 11,
+  "claims_flagged": 1,
+  "substrate_refs_found": 7,
+  "substrate_refs_verified": 5,
+  "substrate_refs_contradicted": 1,
+  "substrate_refs_unresolvable": 1
+}

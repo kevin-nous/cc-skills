@@ -1,0 +1,4 @@
+# Runtime + test dependencies for the cc:proofread skill engine.
+regex>=2024.0.0
+PyYAML>=6.0
+pytest>=8.0

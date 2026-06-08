@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cc-skills.local/cc:proofread/finding.schema.json",
+  "title": "cc:proofread record",
+  "description": "Discriminated union of the three record types emitted by cc:proofread lenses and the orchestrator. JSONL files written under /tmp/cc-proofread-<run-id>/ mix all three.",
+  "type": "object",
+  "required": ["record_type"],
+  "oneOf": [
+    { "$ref": "#/$defs/Finding" },
+    { "$ref": "#/$defs/Coverage" },
+    { "$ref": "#/$defs/RunRecord" }
+  ],
+  "$defs": {
+    "Lens": {
+      "type": "string",
+      "enum": ["scope", "grounding", "structural", "mechanical", "convergent"]
+    },
+    "LensExceptConvergent": {
+      "type": "string",
+      "enum": ["scope", "grounding", "structural", "mechanical"]
+    },
+    "Severity": {
+      "type": "string",
+      "enum": ["blocking", "advisory"]
+    },
+    "CheckId": {
+      "type": "string",
+      "description": "Kebab-case identifier matching a check defined in default-criteria.md (or a project criteria.md override). Validators do not enforce the registry — that's the orchestrator's job — but the pattern is enforced.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "Mode": {
+      "type": "string",
+      "enum": ["default", "deep"]
+    },
+    "Location": {
+      "type": "object",
+      "description": "Where in the artifact the claim appears. file is optional for piped/pasted text. section is a free-form pointer (e.g. heading text) for narrative artifacts where line numbers shift between edits.",
+      "required": ["line_range_start", "line_range_end"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string" },
+        "line_range_start": { "type": "integer", "minimum": 1 },
+        "line_range_end": { "type": "integer", "minimum": 1 },
+        "section": { "type": "string" }
+      }
+    },
+    "Evidence": {
+      "type": "object",
+      "description": "Substrate-grounded counter-evidence. Only meaningful for grounding lens findings. substrate_field is a pointer (yaml path, file path, Amplitude chart id, etc.) that the orchestrator can re-query; substrate_value is the actual value re-queried fresh (not the draft's interpretation); draft_claim is the in-draft assertion the substrate contradicts.",
+      "required": ["substrate_field", "substrate_value", "draft_claim"],
+      "additionalProperties": false,
+      "properties": {
+        "substrate_field": { "type": "string" },
+        "substrate_value": {},
+        "draft_claim": { "type": "string" }
+      }
+    },
+    "Finding": {
+      "type": "object",
+      "required": [
+        "record_type",
+        "lens",
+        "check_id",
+        "severity",
+        "claim",
+        "location",
+        "finding",
+        "remediation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": { "const": "finding" },
+        "lens": { "$ref": "#/$defs/Lens" },
+        "check_id": { "$ref": "#/$defs/CheckId" },
+        "severity": { "$ref": "#/$defs/Severity" },
+        "claim": {
+          "type": "string",
+          "description": "The in-draft claim being audited (quoted or paraphrased).",
+          "minLength": 1
+        },
+        "location": { "$ref": "#/$defs/Location" },
+        "finding": {
+          "type": "string",
+          "description": "What's wrong, in adversarial voice. NOT 'consider whether...' — 'this claim contradicts X'.",
+          "minLength": 1
+        },
+        "remediation": {
+          "type": "string",
+          "description": "Concrete action (may be empty string when the lens deliberately refuses to prescribe a fix)."
+        },
+        "evidence": { "$ref": "#/$defs/Evidence" },
+        "convergent_with": {
+          "type": "array",
+          "description": "Finding ids (UUIDs) that flagged the same root cause; populated by the orchestrator's dedup pass.",
+          "items": { "type": "string", "format": "uuid" },
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Stable identifier used by convergent_with cross-references."
+        }
+      }
+    },
+    "Coverage": {
+      "type": "object",
+      "description": "One coverage record per lens run. Feeds the coverage transparency line in the final output.",
+      "required": [
+        "record_type",
+        "lens",
+        "checks_attempted",
+        "checks_completed",
+        "claims_examined",
+        "claims_flagged"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": { "const": "coverage" },
+        "lens": { "$ref": "#/$defs/LensExceptConvergent" },
+        "checks_attempted": { "type": "integer", "minimum": 0 },
+        "checks_completed": { "type": "integer", "minimum": 0 },
+        "claims_examined": { "type": "integer", "minimum": 0 },
+        "claims_flagged": { "type": "integer", "minimum": 0 },
+        "substrate_refs_found": { "type": "integer", "minimum": 0 },
+        "substrate_refs_verified": { "type": "integer", "minimum": 0 },
+        "substrate_refs_contradicted": { "type": "integer", "minimum": 0 },
+        "substrate_refs_unresolvable": { "type": "integer", "minimum": 0 },
+        "truncated_counts": {
+          "type": "object",
+          "description": "Per-check_id count of findings suppressed by the ccp-017 throttle. Only present when at least one check exceeded its --max-findings-per-check cap. Key is the original check_id (e.g. 'hedge-promotion-regex'); value is the number of suppressed findings beyond the cap.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "error": {
+          "type": "string",
+          "description": "Set when the lens failed (see ccp-009/010). Honestly reported by the orchestrator in the coverage line instead of silent omission."
+        }
+      }
+    },
+    "RunRecord": {
+      "type": "object",
+      "description": "One record per /cc:proofread invocation. Anchors the JSONL stream for any given run.",
+      "required": [
+        "record_type",
+        "run_id",
+        "started_at",
+        "completed_at",
+        "mode",
+        "criteria_source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": { "const": "run_record" },
+        "run_id": { "type": "string", "format": "uuid" },
+        "artifact_path": { "type": "string" },
+        "artifact_hash": {
+          "type": "string",
+          "description": "SHA256 hex of piped/pasted text when no file path is available."
+        },
+        "started_at": { "type": "string", "format": "date-time" },
+        "completed_at": { "type": "string", "format": "date-time" },
+        "mode": { "$ref": "#/$defs/Mode" },
+        "criteria_source": {
+          "type": "string",
+          "description": "Filesystem path to the criteria.md actually used (project override or default)."
+        }
+      },
+      "anyOf": [
+        { "required": ["artifact_path"] },
+        { "required": ["artifact_hash"] }
+      ]
+    }
+  }
+}

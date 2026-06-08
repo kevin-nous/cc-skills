@@ -1,0 +1,4 @@
+{"record_type": "run_record", "run_id": "00000000-0000-4000-8000-000000000001", "artifact_path": "vault/knowledge/2026-05-29-some-writeup.md", "started_at": "2026-05-29T10:00:00Z", "completed_at": "2026-05-29T10:01:12Z", "mode": "default", "criteria_source": "~/cc-skills/cc:proofread/default-criteria.md"}
+{"record_type": "coverage", "lens": "scope", "checks_attempted": 6, "checks_completed": 6, "claims_examined": 8, "claims_flagged": 0}
+{"record_type": "coverage", "lens": "grounding", "checks_attempted": 4, "checks_completed": 4, "claims_examined": 5, "claims_flagged": 0, "substrate_refs_found": 3, "substrate_refs_verified": 3, "substrate_refs_contradicted": 0, "substrate_refs_unresolvable": 0}
+{"record_type": "coverage", "lens": "structural", "checks_attempted": 5, "checks_completed": 5, "claims_examined": 9, "claims_flagged": 0}

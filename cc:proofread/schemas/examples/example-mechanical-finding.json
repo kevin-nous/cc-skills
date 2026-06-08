@@ -1,0 +1,15 @@
+{
+  "record_type": "finding",
+  "id": "5d8e7b2a-3c4f-4a1b-8e2d-0a6c1f9b3e03",
+  "lens": "mechanical",
+  "check_id": "hedge-promotion",
+  "severity": "advisory",
+  "claim": "V2 comfortably met the success bar on signup_completed.",
+  "location": {
+    "line_range_start": 23,
+    "line_range_end": 23,
+    "section": "Result"
+  },
+  "finding": "Hedge-promotion: 'comfortably' asserts more confidence than the underlying CI supports (p=0.059 just clears the 0.05 threshold). The adverb is doing rhetorical work the data does not authorise.",
+  "remediation": "Drop 'comfortably' or replace with the literal CI bound. Calibrate the adverb to the actual margin."
+}

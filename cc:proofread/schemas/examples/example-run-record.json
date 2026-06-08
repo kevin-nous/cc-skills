@@ -1,0 +1,9 @@
+{
+  "record_type": "run_record",
+  "run_id": "c4e1d8a2-9f3b-4d6e-b1c0-7a2f3e4d5c06",
+  "artifact_path": "experiments/checkout-redesign-v2.md",
+  "started_at": "2026-05-29T14:02:18Z",
+  "completed_at": "2026-05-29T14:03:41Z",
+  "mode": "default",
+  "criteria_source": "~/cc-skills/cc:proofread/criteria.md"
+}
