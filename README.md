@@ -1,6 +1,6 @@
 # cc: skills
 
-Personal Claude Code workflow skills. Combines the best of compound engineering, TDD, PRD patterns, and architecture review into one coherent pipeline.
+**I build my own tooling instead of doing the work by hand.** This is the agent pipeline I run daily in Claude Code: turn a vague idea into a PRD, decompose it into independently-buildable issues, implement test-first, review across four lenses, and capture what was learned — plus `cc:proofread`, a multi-agent reviewer that catches over-claims and unsupported numbers in analytical writing before it ships. ~13k lines of Python, 496 tests, runs straight from a clone.
 
 ## The Workflow
 
